@@ -15,6 +15,8 @@ import torch
 import torch.nn.functional as F
 import torch.utils.data as data
 import torchvision.transforms as transforms
+import logging
+from collections import Counter
 
 from lib.rpn_msr.anchor_target_layer import anchor_target_layer
 
@@ -54,47 +56,111 @@ class VRD(data.Dataset):
         self.cfg_key = image_set.split('_')[0]
         self._feat_stride = None
         self._rpn_opts = None
+        # counter of non-found images
+        self.not_found_images = Counter()
+        self.logger = logging.getLogger(__name__)
+        self.logger.setLevel(logging.INFO)
+        handler = logging.FileHandler('image_loading.log')
+        handler.setFormatter(logging.Formatter('%(asctime)s - %(message)s'))
+        self.logger.addHandler(handler)
 
+    #def __getitem__(self, index):
+    #    # Sample random scales to use for each image in this batch
+    #    item = {'rpn_targets': {}}
+
+    #    target_scale = self.opts[self.cfg_key]['SCALES'][npr.randint(0, high=len(self.opts[self.cfg_key]['SCALES']))]
+    #    img = cv2.imread(osp.join(self._data_path, self.annotations[index]['path']))
+    #    img_original_shape = img.shape
+    #    item['path']= self.annotations[index]['path']
+    #    img, im_scale = self._image_resize(img, target_scale, self.opts[self.cfg_key]['MAX_SIZE'])
+    #    # restore the [image_height, image_width, scale_factor, max_size]
+    #    item['image_info'] = np.array([img.shape[0], img.shape[1], im_scale, 
+    #                img_original_shape[0], img_original_shape[1]], dtype=np.float)
+    #    item['visual'] = Image.fromarray(img)
+
+    #    if self.transform is not None:
+    #        item['visual']  = self.transform(item['visual'])
+
+    #    # if self._batch_size > 1:
+    #    #     # padding the image to MAX_SIZE, so all images can be stacked
+    #    #     pad_h = self.opts[self.cfg_key]['MAX_SIZE'] - item['visual'].size(1)
+    #    #     pad_w = self.opts[self.cfg_key]['MAX_SIZE'] - item['visual'].size(2)
+    #    #     item['visual'] = F.pad(item['visual'], (0, pad_w, 0, pad_h)).data
+
+    #    _annotation = self.annotations[index]
+    #    gt_boxes_object = np.zeros((len(_annotation['objects']), 5))
+    #    gt_boxes_object[:, 0:4] = np.array([obj['bbox'] for obj in _annotation['objects']], dtype=np.float) * im_scale
+    #    gt_boxes_object[:, 4]   = np.array([obj['class'] for obj in _annotation['objects']])
+    #    item['objects'] = gt_boxes_object
+    #    if self.cfg_key == 'train': # calculate the RPN target
+    #        item['rpn_targets']['object'] = anchor_target_layer(item['visual'], gt_boxes_object, item['image_info'],
+    #                            self._feat_stride, self._rpn_opts['object'],
+    #                            mappings = self._rpn_opts['mappings'])
+
+
+    #    gt_relationships = np.zeros([len(_annotation['objects']), (len(_annotation['objects']))], dtype=np.long)
+    #    for rel in _annotation['relationships']:
+    #        gt_relationships[rel['sub_id'], rel['obj_id']] = rel['predicate']
+    #    item['relations'] = gt_relationships
+
+    #    return item
     def __getitem__(self, index):
-        # Sample random scales to use for each image in this batch
-        item = {'rpn_targets': {}}
+        max_attempts = len(self)  # Prevent infinite loop
+        for attempt in xrange(max_attempts):
+            item = {'rpn_targets': {}}
 
-        target_scale = self.opts[self.cfg_key]['SCALES'][npr.randint(0, high=len(self.opts[self.cfg_key]['SCALES']))]
-        img = cv2.imread(osp.join(self._data_path, self.annotations[index]['path']))
-        img_original_shape = img.shape
-        item['path']= self.annotations[index]['path']
-        img, im_scale = self._image_resize(img, target_scale, self.opts[self.cfg_key]['MAX_SIZE'])
-        # restore the [image_height, image_width, scale_factor, max_size]
-        item['image_info'] = np.array([img.shape[0], img.shape[1], im_scale, 
-                    img_original_shape[0], img_original_shape[1]], dtype=np.float)
-        item['visual'] = Image.fromarray(img)
+            target_scale = self.opts[self.cfg_key]['SCALES'][npr.randint(0, high=len(self.opts[self.cfg_key]['SCALES']))]
+            img_path = osp.join(self._data_path, self.annotations[index]['path'])
+            img = cv2.imread(img_path)
 
-        if self.transform is not None:
-            item['visual']  = self.transform(item['visual'])
+            if img is None:
+                self.not_found_images[img_path] += 1
+                self.logger.warning("Unable to load image at %s" % img_path)
+                print("Warning: Unable to load image at %s" % img_path)
+                
+                # Log the current count of not found images
+                total_not_found = sum(self.not_found_images.values())
+                self.logger.info("Total images not found so far: %d" % total_not_found)
+                
+                # Try the next image
+                index = (index + 1) % len(self)
+                continue
 
-        # if self._batch_size > 1:
-        #     # padding the image to MAX_SIZE, so all images can be stacked
-        #     pad_h = self.opts[self.cfg_key]['MAX_SIZE'] - item['visual'].size(1)
-        #     pad_w = self.opts[self.cfg_key]['MAX_SIZE'] - item['visual'].size(2)
-        #     item['visual'] = F.pad(item['visual'], (0, pad_w, 0, pad_h)).data
+            # Image loaded successfully, proceed with processing
+            img_original_shape = img.shape
+            item['path'] = self.annotations[index]['path']
+            img, im_scale = self._image_resize(img, target_scale, self.opts[self.cfg_key]['MAX_SIZE'])
+            item['image_info'] = np.array([img.shape[0], img.shape[1], im_scale, 
+                        img_original_shape[0], img_original_shape[1]], dtype=np.float)
+            item['visual'] = Image.fromarray(img)
 
-        _annotation = self.annotations[index]
-        gt_boxes_object = np.zeros((len(_annotation['objects']), 5))
-        gt_boxes_object[:, 0:4] = np.array([obj['bbox'] for obj in _annotation['objects']], dtype=np.float) * im_scale
-        gt_boxes_object[:, 4]   = np.array([obj['class'] for obj in _annotation['objects']])
-        item['objects'] = gt_boxes_object
-        if self.cfg_key == 'train': # calculate the RPN target
-            item['rpn_targets']['object'] = anchor_target_layer(item['visual'], gt_boxes_object, item['image_info'],
-                                self._feat_stride, self._rpn_opts['object'],
-                                mappings = self._rpn_opts['mappings'])
+            if self.transform is not None:
+                item['visual'] = self.transform(item['visual'])
 
+            _annotation = self.annotations[index]
+            gt_boxes_object = np.zeros((len(_annotation['objects']), 5))
+            gt_boxes_object[:, 0:4] = np.array([obj['bbox'] for obj in _annotation['objects']], dtype=np.float) * im_scale
+            gt_boxes_object[:, 4]   = np.array([obj['class'] for obj in _annotation['objects']])
+            item['objects'] = gt_boxes_object
 
-        gt_relationships = np.zeros([len(_annotation['objects']), (len(_annotation['objects']))], dtype=np.long)
-        for rel in _annotation['relationships']:
-            gt_relationships[rel['sub_id'], rel['obj_id']] = rel['predicate']
-        item['relations'] = gt_relationships
+            if self.cfg_key == 'train':
+                item['rpn_targets']['object'] = anchor_target_layer(item['visual'], gt_boxes_object, item['image_info'],
+                                    self._feat_stride, self._rpn_opts['object'],
+                                    mappings = self._rpn_opts['mappings'])
 
-        return item
+            gt_relationships = np.zeros([len(_annotation['objects']), (len(_annotation['objects']))], dtype=np.long)
+            for rel in _annotation['relationships']:
+                gt_relationships[rel['sub_id'], rel['obj_id']] = rel['predicate']
+            item['relations'] = gt_relationships
+
+            return item
+        # If we've tried all images and none could be loaded
+        raise RuntimeError("Unable to load any images from the dataset after trying all samples.")
+    def __len__(self):
+        return len(self.annotations)
+
+    def get_not_found_summary(self):
+        return dict(self.not_found_images)
 
     @staticmethod
     def collate(items):

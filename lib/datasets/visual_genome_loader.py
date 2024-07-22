@@ -92,6 +92,10 @@ class visual_genome(data.Dataset):
 
         target_scale = self.opts[self.cfg_key]['SCALES'][npr.randint(0, high=len(self.opts[self.cfg_key]['SCALES']))]
         img = cv2.imread(osp.join(self._data_path, self.annotations[index]['path']))
+
+        if img is None:
+            print("img not found index %d, path: %s" % (index, osp.join(self._data_path, self.annotations[index]['path'])))
+
         img_original_shape = img.shape
         item['path']= self.annotations[index]['path']
         img, im_scale = self._image_resize(img, target_scale, self.opts[self.cfg_key]['MAX_SIZE'])

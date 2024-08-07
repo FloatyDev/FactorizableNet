@@ -127,8 +127,8 @@ def proposal_target_layer(object_rois, gt_objects, gt_relationships, num_classes
         rel_bg_num = rel_per_image - rel_fg_num
 
     phrase_labels = np.zeros(rel_bg_num, dtype=np.float)
-    sub_assignment = npr.choice(xrange(object_keep_inds.size), size=rel_bg_num, replace=True)
-    obj_assignment = npr.choice(xrange(object_keep_inds.size), size=rel_bg_num, replace=True)
+    sub_assignment = npr.choice(range(object_keep_inds.size), size=rel_bg_num, replace=True)
+    obj_assignment = npr.choice(range(object_keep_inds.size), size=rel_bg_num, replace=True)
     if (sub_assignment == obj_assignment).any(): # an ugly hack for the issue
         obj_assignment[sub_assignment == obj_assignment] = (obj_assignment[sub_assignment == obj_assignment] + 1) % object_keep_inds.size
 

@@ -43,8 +43,8 @@ class VRD(data.Dataset):
         self._object_classes = tuple(['__background__'] + obj_cats)
         pred_cats = json.load(open(osp.join(annotation_dir, 'predicates.json')))
         self._predicate_classes = tuple(['__background__'] + pred_cats)
-        self._object_class_to_ind = dict(zip(self.object_classes, xrange(self.num_object_classes)))
-        self._predicate_class_to_ind = dict(zip(self.predicate_classes, xrange(self.num_predicate_classes)))
+        self._object_class_to_ind = dict(zip(self.object_classes, range(self.num_object_classes)))
+        self._predicate_class_to_ind = dict(zip(self.predicate_classes, range(self.num_predicate_classes)))
 
         # image transformation
         normalize = transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])

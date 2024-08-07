@@ -189,7 +189,7 @@ def _sample_rois(rois, gt_rois, rois_per_image, fg_frac):
     # Compute number of background RoIs to take from this image (guarding
     # against there being fewer than desired)
     bg_rois_per_this_image = rois_per_image - fg_rois_per_this_image
-    bg_rois_per_this_image = min(bg_rois_per_this_image, bg_inds.size)
+    bg_rois_per_this_image = int(min(bg_rois_per_this_image, bg_inds.size))
     # bg_rois_per_this_image = fg_rois_per_this_image
     # Sample background regions without replacement
     if bg_inds.size > 0:

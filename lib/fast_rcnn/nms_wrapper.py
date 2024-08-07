@@ -23,4 +23,4 @@ def nms(dets, thresh, retain_all=False):
     	return nms_retain_all(dets, thresh)
     else:
         dets = torch.Tensor(dets).cuda()
-    	return nms_gpu(dets[:, :4], dets[:, 4], thresh).cpu().numpy()
+        return nms_gpu(dets[:, :4], dets[:, 4], thresh).cpu().numpy()

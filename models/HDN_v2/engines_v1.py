@@ -74,9 +74,15 @@ def train(loader, model, optimizer, exp_logger, epoch, train_all, print_freq=100
                 network.avg_gradient(model, iter_size)
             optimizer.step()
             
-        except:
+        except Exception as e:
             import pdb; pdb.set_trace()
             print("Error: [{}]".format(i))
+            print(e)
+            print("Error: [{}]".format(i))
+            print("Error occurred: {}".format(e))
+            print("Error type: {}".format(type(e)))
+            import traceback
+            traceback.print_exc()
         end = time.time()
         # Logging the training loss
         if  (i + 1) % print_freq == 0:

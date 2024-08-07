@@ -57,12 +57,12 @@ class VRD(data.Dataset):
         self._feat_stride = None
         self._rpn_opts = None
         # counter of non-found images
-        self.not_found_images = Counter()
-        self.logger = logging.getLogger(__name__)
-        self.logger.setLevel(logging.INFO)
-        handler = logging.FileHandler('image_loading.log')
-        handler.setFormatter(logging.Formatter('%(asctime)s - %(message)s'))
-        self.logger.addHandler(handler)
+        # self.not_found_images = Counter()
+        # self.logger = logging.getLogger(__name__)
+        # self.logger.setLevel(logging.INFO)
+        # handler = logging.FileHandler('image_loading.log')
+        # handler.setFormatter(logging.Formatter('%(asctime)s - %(message)s'))
+        # self.logger.addHandler(handler)
 
     #def __getitem__(self, index):
     #    # Sample random scales to use for each image in this batch

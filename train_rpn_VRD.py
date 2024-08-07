@@ -140,17 +140,17 @@ def train(train_loader, target_net, optimizer, epoch):
                 np_to_variable(sample['rpn_targets']['object'][0][3],is_cuda=True)
                 ]
         # Forward pass
-        target_net(im_data, im_info, rpn_data=anchor_targets)
+        features, rois, losses=target_net(im_data, im_info, rpn_data=anchor_targets)
         # record loss
-        loss = target_net.loss
+        loss = losses["loss"]
         # total loss
-        train_loss.update(loss.data[0], im_data.size(0))
+        train_loss.update(loss.item(), im_data.size(0))
         # object bbox reg
-        train_loss_obj_box.update(target_net.loss_box.data[0], im_data.size(0))
+        train_loss_obj_box.update(losses["loss_box"].item(), im_data.size(0))
         # object score
-        train_loss_obj_entropy.update(target_net.loss_cls.data[0], im_data.size(0))
+        train_loss_obj_entropy.update(losses["loss_cls"].item(), im_data.size(0))
         # accuracy
-        accuracy_obj.update(target_net.tp, target_net.tf, target_net.fg_cnt, target_net.bg_cnt)
+        accuracy_obj.update(losses["tp"], losses["tf"], losses["fg_cnt"], losses["bg_cnt"])
 
         # backward
         optimizer.zero_grad()

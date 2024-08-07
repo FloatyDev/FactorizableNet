@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 from torch.nn import Parameter
 import pdb
-import relation_module
+from . import relation_module
 #from options.config_FN import cfg
 
 class Dumplicate_Removal(nn.Module):

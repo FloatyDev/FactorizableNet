@@ -30,7 +30,7 @@ import lib.network as network
 from lib.layer_utils.roi_layers.roi_align import ROIAlign
 import pdb
 
-import engines_v1 as engines
+from . import engines_v1 as engines
 
 DEBUG = False
 TIME_IT = False

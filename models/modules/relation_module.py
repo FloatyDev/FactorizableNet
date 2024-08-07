@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from torch.autograd import Variable
 import pdb
 
-import geometry_transform 
+from . import geometry_transform 
 
 
 class Relation_Module(nn.Module):

@@ -9,7 +9,7 @@ import numpy as np
 from lib.fast_rcnn.nms_wrapper import nms
 
 from lib.fast_rcnn.bbox_transform import bbox_transform_inv, clip_boxes
-from generate_anchors import generate_anchors
+from .generate_anchors import generate_anchors
 
 import pdb
 

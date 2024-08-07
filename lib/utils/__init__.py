@@ -6,6 +6,8 @@
 # --------------------------------------------------------
 from . import cython_nms
 from . import cython_bbox
+import sys
+sys.path.append("./lib/utils")
 import blob
 import nms
 import timer

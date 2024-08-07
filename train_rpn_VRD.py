@@ -180,7 +180,6 @@ def train(train_loader, target_net, optimizer, epoch):
                    data_time=data_time, loss=train_loss,
                    cls_loss_object=train_loss_obj_entropy, reg_loss_object=train_loss_obj_box,
                    accuracy_obj=accuracy_obj))
-
 def test(test_loader, target_net):
     box_num = 0
     correct_cnt, total_cnt = 0., 0.
@@ -194,12 +193,17 @@ def test(test_loader, target_net):
     for i, sample in enumerate(test_loader):
         correct_cnt_t, total_cnt_t = 0., 0.
         # Forward pass
-        im_data = Variable(sample['visual'].cuda(), volatile=True)
-        im_counter += im_data.size(0)
-        im_info = sample['image_info']
-        gt_objects = sample['objects']
-        object_rois = target_net(im_data, im_info)[1]
-        results.append(object_rois.cpu().data.numpy())
+        with torch.no_grad():
+            # Move the image to CUDA and ensure it's 4-dimensional
+            input_visual = [item for item in sample['visual']]
+            im_data = input_visual[0]
+            im_data = im_data.cuda()
+            im_counter += im_data.size(0)
+            im_info = sample['image_info']
+            gt_objects = sample['objects']
+            object_rois = target_net(im_data, im_info)[1]
+            results.append(object_rois.cpu().numpy())
+        
         box_num += object_rois.size(0)
         correct_cnt_t, total_cnt_t = check_recall(object_rois, gt_objects, 200)
         correct_cnt += correct_cnt_t

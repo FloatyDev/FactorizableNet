@@ -10,7 +10,7 @@ import yaml
 import click
 from pprint import pprint
 # To restore the testing results for further analysis
-import cPickle
+import pickle
 
 
 import torch

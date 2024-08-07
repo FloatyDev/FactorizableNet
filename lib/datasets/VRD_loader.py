@@ -169,12 +169,6 @@ class VRD(data.Dataset):
                 batch_item[key] = [x[key] for x in items]
 
         return batch_item
-
-
-    def __len__(self):
-        return len(self.annotations)
-
-
     @property
     def voc_size(self):
         return len(self.idx2word)

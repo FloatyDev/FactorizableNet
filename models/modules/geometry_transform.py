@@ -47,7 +47,7 @@ def positional_encoding(position_mat, dim_output, wave_length=1000):
       '''
       # position_mat: [num_keys, num_queries, 4]
       assert dim_output % 8 == 0, "[dim_output] is expected to be an integral multiple of 8"
-      position_enc = torch.Tensor([np.power(wave_length, 8.*i/dim_output) for i in range(dim_output / 8)]).view(1, 1, 1, -1).type_as(position_mat)
+      position_enc = torch.Tensor([np.power(wave_length, 8.*i/dim_output) for i in range(dim_output // 8)]).view(1, 1, 1, -1).type_as(position_mat)
       # position_enc: [num_keys, num_queries, 4, dim_output / 8]
       position_enc = position_mat.unsqueeze(-1) * 100 / position_enc
       # Second part, apply the cosine to even columns and sin to odds.

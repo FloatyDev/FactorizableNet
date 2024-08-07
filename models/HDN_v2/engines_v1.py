@@ -164,7 +164,7 @@ def test(loader, model, top_Ns, nms=-1., triplet_nms=-1., use_gt_boxes=False):
 
 
 def test_object_detection(loader, model, nms=-1., use_gt_boxes=False):
-    print '========== Testing ======='
+    print('========== Testing =======')
     model.eval()
     object_classes = loader.dataset.object_classes
     result = {obj: {} for obj in object_classes}

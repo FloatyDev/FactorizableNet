@@ -127,6 +127,14 @@ class Factorizable_network(FN_v4):
             losses["loss_nms"] = loss_nms
 
         losses['loss'] = self.loss(losses)
+        def monitor_predictions(cls_prob_object):
+            _, predicted_classes = torch.max(cls_prob_object, 1)
+            class_distribution = torch.bincount(predicted_classes, minlength=cls_prob_object.size(1))
+            print("Class distribution: {}".format(class_distribution))
+            if (predicted_classes == 0).all():
+                print("Warning: All proposals predicted as background!")
+
+        monitor_predictions(cls_prob_object=cls_prob_object)
 
         return losses
 

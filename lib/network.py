@@ -78,7 +78,7 @@ def load_net(fname, net):
                 v.copy_(param)
                 #print '[Copied]: {}'.format(k)
             else:
-                print '[Missed]: {}'.format(k)
+                print( '[Missed]: {}'.format(k))
                 print('[Manually copy instructions]: \n'
                          'check the existence of new name:\n'
                          '\t \'{}\' in h5f\n'
@@ -87,7 +87,7 @@ def load_net(fname, net):
                          '\t v.copy_(param)\n'.format(k, k))
                 pdb.set_trace()
         except Exception as e:
-            print '[Loaded net not complete] Parameter[{}] Size Mismatch...'.format(k)
+            print('[Loaded net not complete] Parameter[{}] Size Mismatch...'.format(k))
             pdb.set_trace()
 
 

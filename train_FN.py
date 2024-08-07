@@ -138,14 +138,14 @@ def main():
             options['data']['dataset_version'] = data_opts.get('dataset_version', None)
             options['opts'] = data_opts
 
-    print '## args'
+    print ('## args')
     pprint(vars(args))
-    print '## options'
+    print ('## options')
     pprint(options)
 
     lr = options['optim']['lr']
     options = get_model_name(options)
-    print 'Checkpoints are saved to: {}'.format(options['logs']['dir_logs'])
+    print ('Checkpoints are saved to: {}'.format(options['logs']['dir_logs']))
 
     # To set the random seed
     random.seed(args.seed)
@@ -298,7 +298,7 @@ def main():
         python_eval(path_dets, osp.join(data_opts['dir'], 'object_xml'))
         return
 
-    print '========== [Start Training] ==========\n'
+    print ('========== [Start Training] ==========\n')
 
     FLAG_infinite = False
     loop_counter = 0

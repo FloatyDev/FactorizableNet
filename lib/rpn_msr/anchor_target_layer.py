@@ -206,14 +206,14 @@ def anchor_target_layer(img, gt_boxes, im_info, _feat_stride,
 
     if DEBUG:
         global _fg_sum, _bg_sum, _count
-        print 'rpn: max max_overlap', np.max(max_overlaps)
-        print 'rpn: num_positive', np.sum(labels == 1)
-        print 'rpn: num_negative', np.sum(labels == 0)
+        print ('rpn: max max_overlap', np.max(max_overlaps))
+        print ('rpn: num_positive', np.sum(labels == 1))
+        print ('rpn: num_negative', np.sum(labels == 0))
         _fg_sum += np.sum(labels == 1)
         _bg_sum += np.sum(labels == 0)
         _count += 1
-        print 'rpn: num_positive avg', _fg_sum / _count
-        print 'rpn: num_negative avg', _bg_sum / _count
+        print ('rpn: num_positive avg'), _fg_sum / _count
+        print ('rpn: num_negative avg'), _bg_sum / _count
 
     # labels
     labels = labels.reshape((full_height, full_width, A)).transpose(2, 0, 1).reshape(-1)

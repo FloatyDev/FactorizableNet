@@ -41,14 +41,14 @@ class RPN(nn.Module):
         if self.opts['kmeans_anchors']:
             # Loading k-means anchors
             kmeans_anchors_file = osp.join(self.opts['anchor_dir'], 'kmeans_anchors.json')
-            print 'using k-means anchors: {}'.format(kmeans_anchors_file)
+            print('using k-means anchors: {}'.format(kmeans_anchors_file))
             anchors = json.load(open(kmeans_anchors_file))
             if 'scale' not in self.opts:
                 print('No RPN scale is given, default [600] is set')
             self.opts['object']['anchor_scales'] = list(np.array(anchors['anchor_scales_kmeans']) / 600.0 * self.opts.get('scale', 600.))
             self.opts['object']['anchor_ratios'] = anchors['anchor_ratios_kmeans']
         else:
-            print 'using normal anchors'
+            print('using normal anchors')
             anchor_scales, anchor_ratios = \
                 np.meshgrid(self.anchor_scales_normal, self.anchor_ratios_normal, indexing='ij')
             self.opts['object']['anchor_scales'] = anchor_scales.reshape(-1)

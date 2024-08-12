@@ -122,8 +122,7 @@ def save_results(results, epoch, dir_logs, is_testing = True):
     path_rslt = os.path.join(dir_epoch, 'testing_result.pkl')
     os.system('mkdir -p ' + dir_epoch)
     with open(path_rslt, 'wb') as f:
-        cPickle.dump(results, f, cPickle.HIGHEST_PROTOCOL)
-
+        pickle.dump(results, f, pickle.HIGHEST_PROTOCOL)
 def save_detections(results, epoch, dir_logs, is_testing = True):
     if is_testing:
         subfolder_name = 'evaluate_object_detection'

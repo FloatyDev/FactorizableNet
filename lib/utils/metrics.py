@@ -64,7 +64,7 @@ def check_phrase_recall(gt_objects, gt_relationships,
 
 
     for idx, top_N in enumerate(top_Ns):
-        for gt_id in xrange(rel_cnt):
+        for gt_id in range(rel_cnt):
             fg_candidate = np.where(phrase_overlaps[:top_N, gt_id] >= thres)[0]
             
             for candidate_id in fg_candidate:
@@ -104,7 +104,7 @@ def check_relationship_recall(gt_objects, gt_relationships,
 
 
     for idx, top_N in enumerate(top_Ns):
-        for gt_id in xrange(rel_cnt):
+        for gt_id in range(rel_cnt):
             fg_candidate = np.where(np.logical_and(
                 sub_overlaps[:top_N, gt_id] >= thres, 
                 obj_overlaps[:top_N, gt_id] >= thres))[0]
@@ -145,7 +145,7 @@ def check_hit_detections(gt_objects, gt_relationships,
 
 
     
-    for pred_id in xrange(pred_rel.shape[0]):
+    for pred_id in range(pred_rel.shape[0]):
 
         fg_candidate = np.where(np.logical_and(
             sub_overlaps[pred_id] >= thres, 
